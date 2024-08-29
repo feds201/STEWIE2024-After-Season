@@ -21,6 +21,9 @@ package frc.robot;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -114,6 +117,9 @@ public class RobotContainer {
     
     public final CommandXboxController driverController;
     public final CommandXboxController operatorController;
+
+    public Command straightLineAuto = drivetrain.getAutoPath("straightLineAuto");
+    public Command testPath = drivetrain.getAutoPath("testPath");
     
     SendableChooser<Command> autonChooser = new SendableChooser<>();
     
@@ -142,7 +148,15 @@ public class RobotContainer {
         
         // CAMERAS
         shooterSideCamera = new Back_Camera();
+
+        // CONTROLLERS
+            driverController = new CommandXboxController(OIConstants.kDriverController);
+        operatorController = new CommandXboxController(OIConstants.kOperatorController);
         
+
+       
+
+
         // Add subsystems to their respective shuffleboard tabs
         arm.getShuffleboardTab().add("arm", arm);
         shooterWheels.getShuffleboardTab().add("shooter wheels", shooterWheels);
@@ -152,9 +166,7 @@ public class RobotContainer {
         intakeWheels.getShuffleboardTab().add("wheels", intakeWheels);
         shooterWheels.getShuffleboardTab().add("servo", servos);
         
-        driverController = new CommandXboxController(OIConstants.kDriverController);
-        operatorController = new CommandXboxController(OIConstants.kOperatorController);
-        
+    
         configureDefaultCommands();
         configureDriverController();
         configureOperatorController();
@@ -165,13 +177,28 @@ public class RobotContainer {
         setupShooterCommands();
         setupErrorTriggers();
         setupAutonCommands();
+
     }
     
 
     private void setupAutonCommands() {
+         //AUTON NAMED COMMANDS
+        NamedCommands.registerCommand("shootNote", 
+        new ShootFromHandoff(shooterRotation, shooterWheels, servos, leds, () -> VisionVariables.ExportedVariables.Distance, shooterIRSensor));
+
+        NamedCommands.registerCommand("intakeNote", 
+        new DeployIntake(wrist, intakeWheels, shooterRotation, intakeIRSensor, leds, driverController, operatorController));
+
+        NamedCommands.registerCommand("handoffToShooter", new ParallelCommandGroup(
+            new RotateArmToPosition(arm, () -> 0),
+                new AlignShooterAndIntake(shooterRotation, wrist, intakeWheels,
+                    servos, shooterIRSensor, leds)));
+
+        NamedCommands.registerCommand("fieldCentric", drivetrain.runOnce(drivetrain::seedFieldRelative));
+       
         // Create and add autonomous commands to the chooser
-        autonChooser.addOption("Autonomous 1", null);
-        autonChooser.addOption("Autonomous 2", null);
+        autonChooser.addOption("Straight Back 2 note", straightLineAuto);
+        autonChooser.addOption("Test Path", testPath);
         // ... add more autonomous commands as needed
     
         // Add the chooser to the Shuffleboard
