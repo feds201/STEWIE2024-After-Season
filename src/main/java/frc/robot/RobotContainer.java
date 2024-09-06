@@ -332,7 +332,12 @@ public class RobotContainer {
             ));
         
         operatorController.a()
-            .onTrue(new PlaceInAmp(wrist, intakeWheels, arm, leds, shooterRotation)
+            .onTrue(new PlaceInAmp(
+                    wrist,
+                    intakeWheels,
+                    arm,
+                    leds,
+                    shooterRotation)
                 .andThen(
                     new ParallelCommandGroup(
                         new SetLEDColor(leds,
