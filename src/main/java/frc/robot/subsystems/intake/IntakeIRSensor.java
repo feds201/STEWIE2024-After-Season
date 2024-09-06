@@ -6,14 +6,15 @@ package frc.robot.subsystems.intake;
 
 import edu.wpi.first.networktables.BooleanEntry;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.DIOConstants.*;
 import frc.robot.subsystems.SubsystemABC;
 
 public class IntakeIRSensor extends SubsystemABC {
   /** Creates a new BreakBeamSensor. */
   // private final DigitalInput transmitter;
-  private final DigitalInput receiverIntake;
-  private final BooleanEntry beamBrokenIntake;
+  private DigitalInput receiverIntake;
+  private BooleanEntry beamBrokenIntake;
 
   public IntakeIRSensor() {
     setupNetworkTables("irsensor_intake");
@@ -41,6 +42,25 @@ public class IntakeIRSensor extends SubsystemABC {
   public void seedNetworkTables() {
   }
 
+  public void reset() {
+    beamBrokenIntake.set(true);
+    beamBrokenIntake.close();
+  }
+
+  public Command reinitialize() {
+    // Reset the current state
+    reset();
+
+    // Reinitialize the receiver and network table entry
+    receiverIntake = new DigitalInput(SensorConstants.intakeBreakBeamReceiverPort);
+    beamBrokenIntake = ntTable.getBooleanTopic("intake_loaded").getEntry(true);
+
+    // Reinitialize Shuffleboard and NetworkTables
+    setupShuffleboard();
+    seedNetworkTables();
+    return null;
+  }
+
   @Override
   public void writePeriodicOutputs() {
     readBeamBroken();
@@ -55,3 +75,4 @@ public class IntakeIRSensor extends SubsystemABC {
   }
 
 }
+

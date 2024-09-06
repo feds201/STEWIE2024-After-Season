@@ -6,6 +6,7 @@ package frc.robot.commands.compound;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.leds.SetLEDColor;
+import frc.robot.subsystems.intake.IntakeIRSensor;
 import frc.robot.subsystems.shooter.ShooterIRSensor;
 import frc.robot.subsystems.shooter.ShooterRotation;
 import frc.robot.subsystems.shooter.ShooterServos;
@@ -34,6 +35,7 @@ public class ShootFromHandoff extends SequentialCommandGroup {
         addCommands(
             new SetLEDColor(leds, -0.79),
             new ShootNoteAtSpeakerOnly(shooterRotation, shooterWheels, servos, leds, distanceSupplier, shooterIRSensor),
+            shooterIRSensor.reinitialize(),
             new SetLEDColor(leds, Leds.getAllianceColor()));
         
     }

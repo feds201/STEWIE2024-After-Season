@@ -109,10 +109,8 @@ public class RobotContainer {
     // Climber
     private final Climber climber;
     public final Leds leds;
-    
-    private final Back_Camera shooterSideCamera;
-    
-    public final CommandXboxController driverController;
+
+	public final CommandXboxController driverController;
     public final CommandXboxController operatorController;
     
     SendableChooser<Command> autonChooser = new SendableChooser<>();
@@ -141,7 +139,7 @@ public class RobotContainer {
         leds = new Leds();
         
         // CAMERAS
-        shooterSideCamera = new Back_Camera();
+	    Back_Camera shooterSideCamera = new Back_Camera();
         
         // Add subsystems to their respective shuffleboard tabs
         arm.getShuffleboardTab().add("arm", arm);
@@ -307,7 +305,15 @@ public class RobotContainer {
             .onTrue(
                 new ParallelCommandGroup(
                     new RotateWristToPositionInfinite(wrist, IntakeConstants.WristPID.kWristOutOfTheWay),
-                    new ShootFromHandoff(shooterRotation, shooterWheels, servos, leds, () -> VisionVariables.ExportedVariables.Distance, shooterIRSensor))
+                    new ShootFromHandoff(
+                            shooterRotation,
+                             shooterWheels,
+                            servos,
+                            leds,
+                            () -> VisionVariables.ExportedVariables.Distance,
+                            shooterIRSensor
+                    )
+                )
                     .andThen(
                         new ParallelCommandGroup(
                             new ToggleRumble(driverController, 0.3),
@@ -348,8 +354,7 @@ public class RobotContainer {
     }
     
     private void setupErrorTriggers() {
-        // There should be some feedback for an "failure mode" but rumbling the
-        // controller continuously was obnoxious lol.
+
     }
     
     public Command getAutonomousCommand() {
