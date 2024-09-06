@@ -112,9 +112,7 @@ public class RobotContainer {
     public final CommandXboxController driverController;
     public final CommandXboxController operatorController;
 
-    public Command straightLineAuto = drivetrain.getAutoPath("straightLineAuto");
-    public Command testPath = drivetrain.getAutoPath("testPath");
-    public Command hello = drivetrain.getAutoPath("Hello");
+    
 
     SendableChooser<Command> autonChooser = new SendableChooser<>();
 
@@ -168,6 +166,13 @@ public class RobotContainer {
         setupErrorTriggers();
         setupAutonCommands();
 
+
+        // ... add more autonomous commands as needed
+
+        // Add the chooser to the Shuffleboard
+        Shuffleboard.getTab("autons").add(autonChooser);
+        setupAutonPaths();
+
     }
 
     private void setupAutonCommands() {
@@ -187,15 +192,20 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("fieldCentric", drivetrain.runOnce(drivetrain::seedFieldRelative));
 
+        NamedCommands.registerCommand("stopShooter", new ShootNoteMotionMagicVelocity(shooterWheels, () -> 0, () -> 0));
+
         // Create and add autonomous commands to the chooser
+     
+    }
+     private void setupAutonPaths(){
+         Command straightLineAuto = drivetrain.getAutoPath("straightLineAuto");
+         Command testPath = drivetrain.getAutoPath("testPath");
+         Command hello = drivetrain.getAutoPath("Hello");
+
         autonChooser.addOption("Straight Back 2 note", straightLineAuto);
         autonChooser.addOption("Test Path", testPath);
-        autonChooser.addOption("Hello", hello);
-        // ... add more autonomous commands as needed
-
-        // Add the chooser to the Shuffleboard
-        Shuffleboard.getTab("autons").add(autonChooser);
-    }
+        autonChooser.addOption("Hello", hello);  
+     }
 
     private void configureDefaultCommands() {
         drivetrain.setDefaultCommand(new ParallelCommandGroup(
