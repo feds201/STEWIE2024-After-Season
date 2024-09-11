@@ -25,6 +25,7 @@ public class Wrist extends SubsystemABC {
 
   private final PIDController pid = IntakeConstants.WristPID.GetWristPID();
   private final PIDController pidAmp = IntakeConstants.WristPID.GetWristAmpPID();
+ 
 
   private DoubleEntry wristVoltage;
   private DoubleEntry rotationEncoderValue;
