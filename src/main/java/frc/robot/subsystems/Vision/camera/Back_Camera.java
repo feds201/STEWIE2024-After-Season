@@ -148,9 +148,9 @@ public class Back_Camera extends VisionABC {
 				VisionVariables.BackCam.CameraMode = table.getEntry("camMode").getNumber(0).intValue();
 				VisionVariables.BackCam.LEDMode = table.getEntry("ledMode").getNumber(0).intValue();
 				VisionVariables.BackCam.target = tagCenter;
-				SmartDashboard.putNumber("Distance", tagCenter.getDistance());
-				SmartDashboard.putNumber("X", tagCenter.getX());
-				SmartDashboard.putNumber("Y", tagCenter.getY());
+//				SmartDashboard.putNumber("Distance", tagCenter.getDistance());
+//				SmartDashboard.putNumber("X", tagCenter.getX());
+//				SmartDashboard.putNumber("Y", tagCenter.getY());
 
 		}
 

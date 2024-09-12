@@ -75,7 +75,6 @@ public class Leds extends SubsystemBase {
     }
 
     runLeds(getLedColor());
-    SmartDashboard.putBoolean("ARE WE RUNNING??", leds.isAlive());
     SmartDashboard.putString("Current LED Color", LedColors.ColorToString(getLedColor()));
   }
 

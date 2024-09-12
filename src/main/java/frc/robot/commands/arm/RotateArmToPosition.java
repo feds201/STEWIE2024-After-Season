@@ -27,7 +27,6 @@ public class RotateArmToPosition extends Command {
             c_failure = false;
         }
 
-        SmartDashboard.putBoolean("ARM FAILURE", c_failure);
         // Use addRequirements() here to declare subsystem dependencies.
     }
 
