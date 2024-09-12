@@ -155,7 +155,7 @@ public class RobotContainer {
 
 	private void configureFODC(boolean status) {
 		drivetrain.setDefaultCommand(new FODC(status, drivetrain, drive, driverController,
-				swerveSpeedMultiplier));
+				swerveSpeedMultiplier, drivetrain.getPigeon2()));
 
 	}
 
