@@ -12,7 +12,8 @@ import frc.robot.utils.LimelightUtils;
 
 public class AimToAprilTag extends Command {
         private final CommandSwerveDrivetrain c_swerve;
-        private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+
+    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
                 .withDeadband(SwerveConstants.MaxSpeed * 0.1)
                 .withRotationalDeadband(SwerveConstants.MaxAngularRate * 0.1)
                 .withDriveRequestType(DriveRequestType.OpenLoopVoltage);

@@ -1,7 +1,6 @@
-// FODC.java
-
 package frc.robot.commands.swerve;
 
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -10,23 +9,32 @@ import frc.robot.constants.SwerveConstants;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
+import java.util.function.DoubleSupplier;
+
 public class FODC extends Command {
     private final CommandSwerveDrivetrain drivetrain;
-    private final SwerveRequest.FieldCentric drive;
+
+    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+            .withDeadband(SwerveConstants.MaxSpeed * 0.1)
+            .withRotationalDeadband(SwerveConstants.MaxAngularRate * 0.1)
+            .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage);
     private final CommandXboxController driverController;
     private final double swerveSpeedMultiplier;
     private final boolean active;
     private double lastAngle = 0.0;
     private final int lineCount = 72;
+    private final DoubleSupplier c_leftX, c_leftY;
     private final Pigeon2 pigeonIMU;
+    private double lastOutput;
 
     public FODC(boolean active, CommandSwerveDrivetrain drivetrain, SwerveRequest.FieldCentric drive,
-                CommandXboxController driverController, double swerveSpeedMultiplier, Pigeon2 pigeonIMU) {
+                CommandXboxController driverController , double swerveSpeedMultiplier , DoubleSupplier cLeftX , DoubleSupplier cLeftY , Pigeon2 pigeonIMU) {
         this.active = active;
         this.drivetrain = drivetrain;
-        this.drive = drive;
         this.driverController = driverController;
         this.swerveSpeedMultiplier = swerveSpeedMultiplier;
+        c_leftX = cLeftX;
+        c_leftY = cLeftY;
         this.pigeonIMU = pigeonIMU;
 
         // Ensure the command requires the drivetrain subsystem
@@ -44,6 +52,15 @@ public class FODC extends Command {
 
     private double getRobotAngle() {
         return pigeonIMU.getAngle();
+    }
+
+    @Override
+    public void initialize() {
+        SmartDashboard.putBoolean("FODCCommand" , true);
+        drivetrain.resetPID();
+        double initialAngle = getRobotAngle();
+        double snappedAngle = snapToNearestLine(initialAngle , lineCount);
+        drivetrain.setTarget(snappedAngle);
     }
 
     @Override
@@ -67,21 +84,27 @@ public class FODC extends Command {
         SmartDashboard.putNumber("Snapped Angle", snappedAngle);
         SmartDashboard.putNumber("Current Angle", currentAngle);
         SmartDashboard.putNumber("Angle Error", angleError);
+        SwerveConstants.AngleError = angleError;
 
-        if (active) {
-            drivetrain.applyRequest(() -> drive
-                .withVelocityX(-driverController.getLeftY() * SwerveConstants.MaxSpeed * swerveSpeedMultiplier)
-                .withVelocityY(-driverController.getLeftX() * SwerveConstants.MaxSpeed * swerveSpeedMultiplier)
-                .withRotationalRate(angleError)); // Use angle error for rotational rate
+        double output = drivetrain.getPIDRotation(SwerveConstants.AngleError);
 
-            SmartDashboard.putNumber("Velocity X", -driverController.getLeftY() * SwerveConstants.MaxSpeed * swerveSpeedMultiplier);
-            SmartDashboard.putNumber("Velocity Y", -driverController.getLeftX() * SwerveConstants.MaxSpeed * swerveSpeedMultiplier);
-        }
-        else {
-            drivetrain.applyRequest(() -> drive
-                .withVelocityX(-driverController.getLeftY() * SwerveConstants.MaxSpeed * swerveSpeedMultiplier)
-                .withVelocityY(-driverController.getLeftX() * SwerveConstants.MaxSpeed * swerveSpeedMultiplier)
-                .withRotationalRate(0));
-        }
+        SmartDashboard.putNumber("Output" , output);
+        SmartDashboard.putNumber("Error Value" , SwerveConstants.AngleError);
+
+        drivetrain.setControl(drive
+                .withVelocityX(-c_leftX.getAsDouble() * SwerveConstants.MaxSpeed)
+                .withVelocityY(-c_leftY.getAsDouble() * SwerveConstants.MaxSpeed)
+                .withRotationalRate(output));
+        lastOutput = output;
+    }
+
+    @Override
+    public boolean isFinished() {
+        return drivetrain.getPIDAtSetpoint();
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        SmartDashboard.putBoolean("FODCCommand" , false);
     }
 }

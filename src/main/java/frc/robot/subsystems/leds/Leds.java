@@ -6,7 +6,9 @@ package frc.robot.subsystems.leds;
 
 import java.util.Optional;
 
+import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -16,6 +18,7 @@ public class Leds extends SubsystemBase {
   private final Spark leds;
 
   private double currentColor;
+
   private static DriverStation.Alliance currentAlliance = null;
 
   public Leds() {
@@ -28,6 +31,8 @@ public class Leds extends SubsystemBase {
     Optional<DriverStation.Alliance> allianceColor = DriverStation.getAlliance();
 
     if(allianceColor.isPresent()) {
+
+
       SmartDashboard.putString("current alliance color", allianceColor.get().toString());
     }
 
@@ -76,6 +81,8 @@ public class Leds extends SubsystemBase {
 
     runLeds(getLedColor());
     SmartDashboard.putString("Current LED Color", LedColors.ColorToString(getLedColor()));
+
+
   }
 
   public static class LedColors {

@@ -71,8 +71,6 @@ public class RobotContainer {
 	private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
 	private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 	private final Telemetry logger = new Telemetry(SwerveConstants.MaxSpeed);
-	private boolean EnableFODC;
-
 	public double swerveSpeedMultiplier = 1;
 
 	// SHOOTER
@@ -95,8 +93,10 @@ public class RobotContainer {
 	private final Back_Camera shooterSideCamera;
 	public final CommandXboxController driverController;
 	public final CommandXboxController operatorController;
+	private final SendableChooser<Command> chooser = new SendableChooser<>();
 
 	SendableChooser<Command> autonChooser = new SendableChooser<>();
+
 
 	ShuffleboardTab commandsTab = Shuffleboard.getTab("commands");
 
@@ -147,19 +147,25 @@ public class RobotContainer {
 		setupShooterCommands();
 		setupErrorTriggers();
 		setupAutonCommands();
+		setupSmartDashboard();
 
-		Shuffleboard.getTab("autons").add(autonChooser);
 		setupAutonPaths();
 
 	}
 
-	private void configureFODC(boolean status) {
-		drivetrain.setDefaultCommand(new FODC(status, drivetrain, drive, driverController,
-				swerveSpeedMultiplier, drivetrain.getPigeon2()));
+	private void setupSmartDashboard() {
+		SmartDashboard.putData("autons" , autonChooser);
+		chooser.setDefaultOption("FODC Command" , configureFODC(true));
 
 	}
 
+	private Command configureFODC(boolean status) {
+		return new FODC(status , drivetrain , drive , driverController , swerveSpeedMultiplier , driverController::getRightX , driverController::getRightY , drivetrain.getPigeon2());
+	}
+
 	private void setupAutonCommands() {
+
+
 		// AUTON NAMED COMMANDS
 		NamedCommands.registerCommand("shootNote",
 				new ShootFromHandoff(shooterRotation, shooterWheels, servos, leds,
@@ -196,12 +202,15 @@ public class RobotContainer {
 
 	private void configureDefaultCommands() {
 
-		if (EnableFODC) {
-			configureFODC(EnableFODC);
-		} else {
-			configureFODC(EnableFODC);
+		drivetrain.setDefaultCommand(configureFODC(true));
+//                 drivetrain.setDefaultCommand(                  new ParallelCommandGroup(
+//                 drivetrain.applyRequest(() -> drive
+//		                 .withVelocityX(-driverController.getLeftY()*  SwerveConstants.MaxSpeed * swerveSpeedMultiplier)
+//                        .withVelocityY(-driverController.getLeftX()*     SwerveConstants.MaxSpeed * swerveSpeedMultiplier)
+//                        .withRotationalRate(0)),
+//                 new RepeatCommand(
+//                 new InstantCommand(this::printCurrentStickValues))));
 
-		}
 		if (Utils.isSimulation()) {
 			drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
 		}
@@ -215,6 +224,10 @@ public class RobotContainer {
 				.onFalse(new InstantCommand(() -> leds.setLedColor(Leds.getAllianceColor())));
 
 		shooterWheels.setDefaultCommand(new ShootNoteMotionMagicVelocity(shooterWheels, () -> 0, () -> 0));
+	}
+
+	private void printCurrentStickValues() {
+
 	}
 
 	private void configureDriverController() {
