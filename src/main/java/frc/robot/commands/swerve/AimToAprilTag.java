@@ -50,7 +50,7 @@ public class AimToAprilTag extends Command {
         public void execute() {
 
 
-                double output = c_swerve.getPIDRotation(VisionVariables.BackCam.target.getX());
+            double output = c_swerve.getPIDRotation(VisionVariables.BackCam.target.getX() , true);
 
                 SmartDashboard.putNumber("errorVal", VisionVariables.BackCam.target.getX());
                 SmartDashboard.putNumber("Output", output);

@@ -78,7 +78,7 @@ public class Arm extends SubsystemABC {
   public void setupShuffleboard() {
     tab.add("armRotation talon", armRotation);
     tab.add("armRotationEncoder", armRotationEncoder);
-    tab.add("pid controller", pid);
+      tab.add("pidForVision controller" , pid);
   }
 
   public void rotateOrHold(double power) {
@@ -114,7 +114,7 @@ public class Arm extends SubsystemABC {
   }
 
   public void rotateArmToTarget() {
-    SmartDashboard.putNumber("arm pid", pid.calculate(getArmAngle()));
+      SmartDashboard.putNumber("arm pidForVision" , pid.calculate(getArmAngle()));
     this.setOutput(pid.calculate(getArmAngle()));
   }
 

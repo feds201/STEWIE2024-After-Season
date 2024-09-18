@@ -39,9 +39,10 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
     private static Pigeon2 pigeon = new Pigeon2(0);
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
-    public static final PIDController pid = new PIDController(SwerveConstants.kRotationP  , SwerveConstants.kRotationI, SwerveConstants.kRotationD);
-//    public static final PIDController pid = new PIDController(0.04, .0009, .009);
-//    public static final PIDController pid =  new PIDController(.06135, .00, .00);
+    public static final PIDController pidForVision = new PIDController(SwerveConstants.kRotationPForVision , SwerveConstants.kRotationIForVision , SwerveConstants.kRotationDForVision);
+    public static final PIDController pidForSwerve = new PIDController(SwerveConstants.kRotationPForSwerve , SwerveConstants.kRotationIForSwerve , SwerveConstants.kRotationDForSwerve);
+//    public static final PIDController pidForVision = new PIDController(0.04, .0009, .009);
+//    public static final PIDController pidForVision =  new PIDController(.06135, .00, .00);
 
 
     private final SwerveRequest.ApplyChassisSpeeds autoRequest = new SwerveRequest.ApplyChassisSpeeds();
@@ -61,7 +62,7 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        setupPIDController();
+        setupPIDControllerForVision();
     }
 
     public CommandSwerveDrivetrain(SwerveDrivetrainConstants driveTrainConstants, SwerveModuleConstants... modules) {
@@ -70,22 +71,22 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
         if (Utils.isSimulation()) {
             startSimThread();
         }
-        setupPIDController();
+        setupPIDControllerForVision();
     }
 
-    public void setupPIDController() {
-        pid.setTolerance(1); // allowable angle error
-        pid.enableContinuousInput(0, 360); // it is faster to go 1 degree from 359 to 0 instead of 359 degrees
-        pid.setIntegratorRange(-0.1, 0.1);
-        pid.setSetpoint(0); // 0 = apriltag angle
+    public void setupPIDControllerForVision() {
+        pidForVision.setTolerance(1); // allowable angle error
+        pidForVision.enableContinuousInput(0 , 360); // it is faster to go 1 degree from 359 to 0 instead of 359 degrees
+        pidForVision.setIntegratorRange(-0.1 , 0.1);
+        pidForVision.setSetpoint(0); // 0 = apriltag angle
     }
 
     public void setTarget(double target) {
-        pid.setSetpoint(target);
+        pidForVision.setSetpoint(target);
     }
 
     public boolean getPIDAtSetpoint() {
-        return pid.atSetpoint();
+        return pidForVision.atSetpoint();
     }
 
     public Command applyRequest(Supplier<SwerveRequest> requestSupplier) {
@@ -123,13 +124,17 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
                 this); // Subsystem for requirements
     }
 
-    public double getPIDRotation(double currentX) {
-        SmartDashboard.putNumber("PID Current", currentX);
-        return pid.calculate(currentX);
+    public double getPIDRotation(double currentX , boolean isVision) {
+        if ( isVision ) {
+            return pidForVision.calculate(currentX);
+        } else {
+            return pidForSwerve.calculate(currentX);
+        }
     }
 
+
     public void resetPID() {
-        pid.reset();
+        pidForVision.reset();
     }
 
     private void startSimThread() {
@@ -149,11 +154,11 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     @Override
     public void periodic() {
-        SmartDashboard.getNumber("PID:Error", pid.getPositionError());
-        SmartDashboard.getBoolean("PID: ISthere", pid.atSetpoint());
-        SmartDashboard.getNumber("PID: P", pid.getP());
-        SmartDashboard.getNumber("PID: I", pid.getI());
-        SmartDashboard.getNumber("PID: D", pid.getD());
+        SmartDashboard.getNumber("PID:Error" , pidForVision.getPositionError());
+        SmartDashboard.getBoolean("PID: ISthere" , pidForVision.atSetpoint());
+        SmartDashboard.getNumber("PID: P" , pidForVision.getP());
+        SmartDashboard.getNumber("PID: I" , pidForVision.getI());
+        SmartDashboard.getNumber("PID: D" , pidForVision.getD());
         /* Periodically try to apply the operator perspective */
         /*
          * If we haven't applied the operator perspective before, then we should apply

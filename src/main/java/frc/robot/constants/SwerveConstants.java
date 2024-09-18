@@ -12,10 +12,13 @@ public class SwerveConstants {
 		public static double kStuckTolerance = -10;
 		
 		//this is for the horizontal yaw align to april tag control
-		public static double kRotationP = 0.085;
+		public static double kRotationPForVision = 0.085;
+	public static double kRotationPForSwerve = 0.085;
 		//0.07
-		public static double kRotationI = .000;
+		public static double kRotationIForVision = .000;
+	public static double kRotationIForSwerve = .000;
 		//.0001
-		public static double kRotationD = .00;
+		public static double kRotationDForSwerve = .00;
+	public static double kRotationDForVision = .00;
 		public static double speedpercentage = 0.5;//1.0
 }

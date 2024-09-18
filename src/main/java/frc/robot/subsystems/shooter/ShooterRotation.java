@@ -66,7 +66,7 @@ public class ShooterRotation extends SubsystemABC {
   public void setupShuffleboard() {
     tab.add("shooter rotate encoder", shooterRotateEncoder);
     tab.add("shoote rotate motor", shooterRotate);
-    tab.add("rotation pid controller", rotatePID);
+      tab.add("rotation pidForVision controller" , rotatePID);
   }
 
   @Override

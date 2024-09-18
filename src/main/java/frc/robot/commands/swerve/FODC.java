@@ -70,30 +70,31 @@ public class FODC extends Command {
         double rightStickY = applyDeadband(driverController.getRightY() , 0.10);
         double angle;
 
-        if (rightStickX != 0 || rightStickY != 0) {
-            angle = Math.toDegrees(Math.atan2(-rightStickY, rightStickX));
+        if ( rightStickX != 0 || rightStickY != 0 ) {
+            angle = Math.toDegrees(Math.atan2(-rightStickY , rightStickX));
             lastAngle = angle;
         } else {
             angle = lastAngle;
         }
 
-        double snappedAngle = snapToNearestLine(angle, lineCount);
+        double snappedAngle = snapToNearestLine(angle , lineCount);
         double currentAngle = getRobotAngle();
         double angleError = snappedAngle - currentAngle;
 
-        SmartDashboard.putNumber("Angle", angle);
-        SmartDashboard.putNumber("Snapped Angle", snappedAngle);
-        SmartDashboard.putNumber("Current Angle", currentAngle);
-        SmartDashboard.putNumber("Angle Error", angleError);
+        SmartDashboard.putNumber("Angle" , angle);
+        SmartDashboard.putNumber("Snapped Angle" , snappedAngle);
+        SmartDashboard.putNumber("Current Angle" , currentAngle);
+        SmartDashboard.putNumber("Angle Error" , angleError);
         SwerveConstants.AngleError = angleError;
-        if ( drivetrain.getPIDAtSetpoint() ) {
+
+        if ( Math.abs(angleError) <= 5.0 ) {
+            // Release drive control system and allow free movement
             drivetrain.applyRequest(() -> drive
                     .withVelocityX(-driverController.getLeftY() * SwerveConstants.MaxSpeed * swerveSpeedMultiplier)
                     .withVelocityY(-driverController.getLeftX() * SwerveConstants.MaxSpeed * swerveSpeedMultiplier)
                     .withRotationalRate(0));
         } else {
-
-            double output = drivetrain.getPIDRotation(SwerveConstants.AngleError);
+            double output = drivetrain.getPIDRotation(SwerveConstants.AngleError , false);
 
             SmartDashboard.putNumber("Output" , output);
             SmartDashboard.putNumber("Error Value" , SwerveConstants.AngleError);
@@ -104,7 +105,6 @@ public class FODC extends Command {
                     .withRotationalRate(output));
             lastOutput = output;
         }
-
     }
 
     @Override
