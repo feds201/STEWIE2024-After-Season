@@ -5,6 +5,7 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.constants.SwerveConstants;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -65,8 +66,8 @@ public class FODC extends Command {
 
     @Override
     public void execute() {
-        double rightStickX = applyDeadband(driverController.getRightX(), 0.05);
-        double rightStickY = applyDeadband(driverController.getRightY(), 0.05);
+        double rightStickX = applyDeadband(driverController.getRightX() , 0.10);
+        double rightStickY = applyDeadband(driverController.getRightY() , 0.10);
         double angle;
 
         if (rightStickX != 0 || rightStickY != 0) {
@@ -85,17 +86,25 @@ public class FODC extends Command {
         SmartDashboard.putNumber("Current Angle", currentAngle);
         SmartDashboard.putNumber("Angle Error", angleError);
         SwerveConstants.AngleError = angleError;
+        if ( drivetrain.getPIDAtSetpoint() ) {
+            drivetrain.applyRequest(() -> drive
+                    .withVelocityX(-driverController.getLeftY() * SwerveConstants.MaxSpeed * swerveSpeedMultiplier)
+                    .withVelocityY(-driverController.getLeftX() * SwerveConstants.MaxSpeed * swerveSpeedMultiplier)
+                    .withRotationalRate(0));
+        } else {
 
-        double output = drivetrain.getPIDRotation(SwerveConstants.AngleError);
+            double output = drivetrain.getPIDRotation(SwerveConstants.AngleError);
 
-        SmartDashboard.putNumber("Output" , output);
-        SmartDashboard.putNumber("Error Value" , SwerveConstants.AngleError);
+            SmartDashboard.putNumber("Output" , output);
+            SmartDashboard.putNumber("Error Value" , SwerveConstants.AngleError);
 
-        drivetrain.setControl(drive
-                .withVelocityX(-c_leftX.getAsDouble() * SwerveConstants.MaxSpeed)
-                .withVelocityY(-c_leftY.getAsDouble() * SwerveConstants.MaxSpeed)
-                .withRotationalRate(output));
-        lastOutput = output;
+            drivetrain.setControl(drive
+                    .withVelocityX(-c_leftX.getAsDouble() * 0.5)
+                    .withVelocityY(-c_leftY.getAsDouble() * 0.5)
+                    .withRotationalRate(output));
+            lastOutput = output;
+        }
+
     }
 
     @Override
