@@ -230,9 +230,6 @@ public class RobotContainer {
         shooterWheels.setDefaultCommand(new ShootNoteMotionMagicVelocity(shooterWheels , () -> 0 , () -> 0));
     }
 
-    private void printCurrentStickValues() {
-
-    }
 
     private void configureDriverController() {
         // Reset field-centric heading on left bumper press
