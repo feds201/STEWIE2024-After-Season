@@ -4,17 +4,15 @@ package frc.robot.subsystems.swerve;
 // Main Programmer : Ritesh Raj
 
 public class RiteshManFilter {
-    private double[][] A;  // Process model
-    private double[][] H;  // Measurement model
-    private double[][] Q;  // Process noise covariance
-    private double[][] R;  // Measurement noise covariance
+    private final double[][] A;  // Process model
+    private final double[][] H;  // Measurement model
+    private final double[][] Q;  // Process noise covariance
+    private final double[][] R;  // Measurement noise covariance
     private double[][] P;  // Error covariance matrix
     private double[][] x;  // State vector
 
-    private double dt;     // Time step (I would probably do every 1/10 of a second)
-
     public RiteshManFilter(double dt) {
-        this.dt = dt;
+        // Time step (I would probably do every 1/10 of a second)
 
         // State transition matrix (A) (This matrix basically telling kalman for every timestep the behavior of how the angle and angular velocity is changing)
         //This code is perfect leave it

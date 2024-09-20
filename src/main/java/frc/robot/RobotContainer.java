@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -50,6 +49,7 @@ import frc.robot.subsystems.shooter.ShooterIRSensor;
 import frc.robot.subsystems.shooter.ShooterRotation;
 import frc.robot.subsystems.shooter.ShooterWheels;
 import frc.robot.subsystems.swerve.CommandSwerveDrivetrain;
+//import frc.robot.subsystems.swerve.FODCSubsystem;
 import frc.robot.subsystems.swerve.FODCSubsystem;
 import frc.robot.subsystems.swerve.generated.TunerConstants;
 import frc.robot.subsystems.Vision.VisionVariables;
@@ -140,6 +140,7 @@ public class RobotContainer {
         wrist.getShuffleboardTab().add("wrist" , wrist);
         intakeWheels.getShuffleboardTab().add("wheels" , intakeWheels);
         shooterWheels.getShuffleboardTab().add("servo" , servos);
+        drivesystem.getShuffleboardTab().add("FODC" , drivesystem);
 
         configureDefaultCommands();
         configureDriverController();
@@ -164,7 +165,7 @@ public class RobotContainer {
     }
 
     private Command configureFODC(boolean status) {
-        return new FODC(status , drivetrain , drive , driverController , swerveSpeedMultiplier , driverController::getLeftX , driverController::getLeftY , drivetrain.getPigeon2() , drivesystem);
+        return new FODC(status , drivetrain , drive , swerveSpeedMultiplier , driverController::getLeftX , driverController::getLeftY , driverController::getRightX , driverController::getRightY , drivetrain.getPigeon2() , drivesystem);
     }
 
     private void setupAutonCommands() {

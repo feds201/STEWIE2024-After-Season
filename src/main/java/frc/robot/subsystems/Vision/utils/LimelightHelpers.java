@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -413,8 +414,8 @@ public class LimelightHelpers {
      */
     static boolean profileJSON = false;
 
-    static final String sanitizeName(String name) {
-        if (name == "" || name == null) {
+    static String sanitizeName(String name) {
+        if ( Objects.equals(name , "") || name == null ) {
             return "limelight";
         }
         return name;
@@ -819,9 +820,10 @@ public class LimelightHelpers {
     private static boolean SYNCH_TAKESNAPSHOT(String tableName, String snapshotName) {
         URL url = getLimelightURLString(tableName, "capturesnapshot");
         try {
+            assert url != null;
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
-            if (snapshotName != null && snapshotName != "") {
+            if ( snapshotName != null && !snapshotName.isEmpty() ) {
                 connection.setRequestProperty("snapname", snapshotName);
             }
 

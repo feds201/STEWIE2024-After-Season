@@ -170,9 +170,9 @@ public class ShooterRotation extends SubsystemABC {
 
   public void readEncoderValue() {
     double encoder = shooterRotateEncoder.get();
-    if(encoder < -340/360) {
+    if ( encoder < ( double ) -340 / 360 ) {
       encoder += 1;
-    } else if (encoder > 10/360) {
+    } else if ( encoder > ( double ) 10 / 360 ) {
       encoder -= 1;
     }
     encoderValue.set(encoder);

@@ -190,9 +190,9 @@ public class Wrist extends SubsystemABC {
 
   public void readIntakeEncoder() {
     double rotationValue = wristRotationEncoder.get();
-    if (rotationValue > 300 / 360) {
+    if ( rotationValue > ( double ) 300 / 360 ) {
       rotationValue -= 1;
-    } else if (rotationValue < -50 / 360) {
+    } else if ( rotationValue < ( double ) -50 / 360 ) {
       rotationValue += 1;
     }
     rotationEncoderValue.set(rotationValue);

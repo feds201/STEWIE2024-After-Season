@@ -112,9 +112,6 @@ public class Leds extends SubsystemBase {
     public final static double FOREST = -0.47; // FOREST!!
 
     public static String ColorToString(double color) {
-      if (color == RED) {
-        return "Red";
-      }
       if (color == ORANGE) {
         return "Orange";
       }

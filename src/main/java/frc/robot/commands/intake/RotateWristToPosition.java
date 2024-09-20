@@ -41,7 +41,7 @@ public class RotateWristToPosition extends Command {
     if(!c_failure) {
       c_intake.rotateWristPID();
     } else {
-      c_intake.setFailure(c_failure);
+      c_intake.setFailure(true);
     }
   }
 

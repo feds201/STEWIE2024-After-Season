@@ -3,6 +3,9 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/Pose": "Field2d",
+      "/Shuffleboard/FODC/FODC": "Subsystem",
+      "/Shuffleboard/FODC/FODC Controller": "PIDController",
+      "/Shuffleboard/FODC/FODC Subsystem": "Subsystem",
       "/Shuffleboard/arm/Rotate Arm": "Command",
       "/Shuffleboard/arm/arm": "Subsystem",
       "/Shuffleboard/arm/armRotation talon": "Motor Controller",

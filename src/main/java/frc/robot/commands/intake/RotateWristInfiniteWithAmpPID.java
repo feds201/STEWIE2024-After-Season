@@ -44,7 +44,7 @@ public class RotateWristInfiniteWithAmpPID extends Command {
     if(!c_failure) {
       c_intake.rotateWristPIDAMP();
     } else {
-      c_intake.setFailure(c_failure);
+      c_intake.setFailure(true);
     }
   }
 
