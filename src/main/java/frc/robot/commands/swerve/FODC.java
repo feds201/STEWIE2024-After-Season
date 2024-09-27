@@ -145,8 +145,8 @@ public class FODC extends Command {
 
                 // Apply drivetrain control with rotational correction
                 drivetrain.setControl(drive
-                        .withVelocityX(-driverLeftStickY.getAsDouble() * SwerveConstants.MaxSpeed * swerveSpeedMultiplier * velocityMultiplier)
-                        .withVelocityY(-driverLeftStickY.getAsDouble() * SwerveConstants.MaxSpeed * swerveSpeedMultiplier * velocityMultiplier)
+                        .withVelocityX(-driverRightStickY.getAsDouble() * SwerveConstants.MaxSpeed * swerveSpeedMultiplier * velocityMultiplier)
+                        .withVelocityY(-driverRightStickY.getAsDouble() * SwerveConstants.MaxSpeed * swerveSpeedMultiplier * velocityMultiplier)
                         .withRotationalRate(rotationOutput));
             } else {
                 // Small error: Allow free movement (no rotational correction)
@@ -161,7 +161,7 @@ public class FODC extends Command {
                     drivetrain.applyRequest(() -> drive
                             .withVelocityX(-driverLeftStickY.getAsDouble() * SwerveConstants.MaxSpeed * swerveSpeedMultiplier)
                             .withVelocityY(-driverLeftStickX.getAsDouble() * SwerveConstants.MaxSpeed * swerveSpeedMultiplier)
-                            .withRotationalRate(0)));
+                            .withRotationalRate(driverLeftStickX.getAsDouble() * SwerveConstants.MaxAngularRate * swerveSpeedMultiplier)));
         }
     }
 

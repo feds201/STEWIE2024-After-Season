@@ -165,7 +165,7 @@ public class RobotContainer {
     }
 
     private Command configureFODC(boolean status) {
-        return new FODC(status , drivetrain , drive , swerveSpeedMultiplier , driverController::getLeftX , driverController::getLeftY , driverController::getRightX , driverController::getRightY , drivetrain.getPigeon2() , drivesystem);
+        return new FODC(status , drivetrain , drive , swerveSpeedMultiplier , driverController::getRightX , driverController::getRightY , driverController::getLeftX , driverController::getLeftY , drivetrain.getPigeon2() , drivesystem);
     }
 
     private void setupAutonCommands() {
