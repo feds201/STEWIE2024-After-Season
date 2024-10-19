@@ -218,7 +218,7 @@ public class RobotContainer {
                         () -> VisionVariables.ExportedVariables.Distance, shooterIRSensor), new ShootNoteMotionMagicVelocity(shooterWheels, () -> 0, () -> 0),
 
                         new ParallelCommandGroup(
-                                new DriveForwardForTime(drivetrain, 4),
+                                new DriveForwardForTime(drivetrain, 12),
             new RotateArmToPosition(arm, () -> ArmConstants.ArmPIDForExternalEncoder.kArmRotationFeederSetpoint)
                 )))
             );
