@@ -364,24 +364,24 @@ public class RobotContainer {
                         .whileTrue(new RotateArmConstantSpeed(arm, ()-> -0.66));
 
              
-                driverController.x() .onTrue(new SequentialCommandGroup(
-                        new ParallelCommandGroup(
-                                new AimToAprilTag(drivetrain,
-                                        () -> -driverController.getLeftX(),
-                                        () -> -driverController.getLeftY(),
-                                        () -> VisionVariables.ExportedVariables.Distance)
-                                        .andThen(
-                                                new ParallelCommandGroup(
-                                                        new SetLEDColor(leds, Leds.LedColors.VIOLET),
-                                                        new ToggleRumble(driverController, 0.3),
-                                                        new ToggleRumble(operatorController, 0.3))),
-                                new RotateWristToPositionInfinite(wrist, IntakeConstants.WristPID.kWristOutOfTheWay))))
-                .onFalse(
-                        new ParallelDeadlineGroup(
-                                new WaitCommand(0.2),
-                                drivetrain.applyRequest(() -> brake),
-                                new RotateWristToPosition(wrist,
-                                        IntakeConstants.WristPID.kWristShooterFeederSetpoint)));
+                // driverController.x() .onTrue(new SequentialCommandGroup(
+                //         new ParallelCommandGroup(
+                //                 new AimToAprilTag(drivetrain,
+                //                         () -> -driverController.getLeftX(),
+                //                         () -> -driverController.getLeftY(),
+                //                         () -> VisionVariables.ExportedVariables.Distance)
+                //                         .andThen(
+                //                                 new ParallelCommandGroup(
+                //                                         new SetLEDColor(leds, Leds.LedColors.VIOLET),
+                //                                         new ToggleRumble(driverController, 0.3),
+                //                                         new ToggleRumble(operatorController, 0.3))),
+                //                 new RotateWristToPositionInfinite(wrist, IntakeConstants.WristPID.kWristOutOfTheWay))))
+                // .onFalse(
+                //         new ParallelDeadlineGroup(
+                //                 new WaitCommand(0.2),
+                //                 drivetrain.applyRequest(() -> brake),
+                //                 new RotateWristToPosition(wrist,
+                //                         IntakeConstants.WristPID.kWristShooterFeederSetpoint)));
     }
 
     public void configureOperatorController() {
