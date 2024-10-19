@@ -6,15 +6,41 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "straightLine1"
+            "name": "fieldCentric"
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "shootNote"
+            "commands": [
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "straightLine1"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "shootNote"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "armDown"
+                }
+              }
+            ]
           }
         },
         {

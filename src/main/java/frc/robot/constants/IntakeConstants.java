@@ -35,6 +35,6 @@ public class IntakeConstants {
   public static final double kAmpInWheelSpeed = 1;
 
   public static final double kHandoffNoteWheelSpeed = 0.6;
-  public static final double kDistanceSensorDetectedDelay = 0.1;
+  public static final double kDistanceSensorDetectedDelay = 0.35;
   
 }

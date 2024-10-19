@@ -42,6 +42,8 @@ import frc.robot.commands.intake.RotateWristToPosition;
 import frc.robot.commands.intake.RotateWristToPositionInfinite;
 import frc.robot.commands.intake.RunIntakeWheels;
 import frc.robot.commands.arm.RotateArmToPosition;
+import frc.robot.commands.autons.DriveForwardForTime;
+import frc.robot.commands.arm.RotateArmConstantSpeed;
 import frc.robot.commands.arm.RotateArmManual;
 import frc.robot.commands.climber.ExtendClimber;
 import frc.robot.commands.compound.*;
@@ -186,13 +188,16 @@ public class RobotContainer {
                         operatorController));
 
         NamedCommands.registerCommand("handoffToShooter", new ParallelCommandGroup(
-                new RotateArmToPosition(arm, () -> 0),
+                // new RotateArmToPosition(arm, () -> 0),
                 new AlignShooterAndIntake(shooterRotation, wrist, intakeWheels,
                         servos, shooterIRSensor, leds)));
 
         NamedCommands.registerCommand("fieldCentric", drivetrain.runOnce(drivetrain::seedFieldRelative));
 
         NamedCommands.registerCommand("stopShooter", new ShootNoteMotionMagicVelocity(shooterWheels, () -> 0, () -> 0));
+
+        NamedCommands.registerCommand("armDown", new RotateArmToPosition(arm, ()->
+         ArmConstants.ArmPIDForExternalEncoder.kArmRotationFeederSetpoint));
 
         // Create and add autonomous commands to the chooser
      
@@ -202,9 +207,21 @@ public class RobotContainer {
          Command testPath = drivetrain.getAutoPath("testPath");
          Command hello = drivetrain.getAutoPath("Hello");
 
-        autonChooser.addOption("Straight Back 2 note", straightLineAuto);
-        autonChooser.addOption("Test Path", testPath);
-        autonChooser.addOption("Hello", hello);  
+        // autonChooser.addOption("Straight Back 2 note", straightLineAuto);
+        autonChooser.addOption("3 Note To The Left", testPath);
+        // autonChooser.addOption("Hello", hello);  
+
+         autonChooser.addOption("Shoot Then Back Up",
+        
+        new ParallelCommandGroup(
+                new SequentialCommandGroup( new ShootFromHandoff(shooterRotation, shooterWheels, servos, leds,
+                        () -> VisionVariables.ExportedVariables.Distance, shooterIRSensor), new ShootNoteMotionMagicVelocity(shooterWheels, () -> 0, () -> 0),
+
+                        new ParallelCommandGroup(
+                                new DriveForwardForTime(drivetrain, 4),
+            new RotateArmToPosition(arm, () -> ArmConstants.ArmPIDForExternalEncoder.kArmRotationFeederSetpoint)
+                )))
+            );
      }
 
     private void configureDefaultCommands() {
@@ -269,7 +286,7 @@ public class RobotContainer {
                 .onTrue(new RotateShooterToPosition(shooterRotation,
                         () -> ShooterConstants.RotationPIDForExternalEncoder.kShooterRotationFeederSetpoint));
 
-        driverController.x()
+        driverController.leftBumper()
                 .onTrue(
                         new SequentialCommandGroup(
                                 new ParallelDeadlineGroup(
@@ -296,9 +313,15 @@ public class RobotContainer {
                                         () -> ShooterConstants.RotationPIDForExternalEncoder.kShooterRotationFeederSetpoint),
                                 new ShootNoteMotionMagicVelocity(shooterWheels, () -> 0, () -> 0)));
 
-        driverController.leftBumper()
-                .onTrue(new InstantCommand(() -> swerveSpeedMultiplier = 0.2))
-                .onFalse(new InstantCommand(() -> swerveSpeedMultiplier = 1));
+        
+
+
+
+
+
+
+
+             
     }
 
     public void configureOperatorController() {
