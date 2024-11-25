@@ -50,7 +50,7 @@ import frc.robot.commands.compound.*;
 import frc.robot.commands.controller.ToggleRumble;
 import frc.robot.commands.leds.SetLEDColor;
 import frc.robot.commands.shooter.*;
-import frc.robot.commands.swerve.AimToAprilTag;
+import frc.robot.commands.swerve.AimToBall;
 import frc.robot.constants.ArmConstants;
 import frc.robot.constants.ClimberConstants;
 import frc.robot.constants.IntakeConstants;
@@ -274,9 +274,9 @@ public class RobotContainer {
                                         new SetLEDColor(leds, Leds.LedColors.WHITE))
                                         .onlyIf(intakeIRSensor::getBeamBroken)));
 
-        driverController.rightTrigger()
-                .onTrue(new SpitOutNote(wrist, intakeWheels))
-                .onFalse(new ResetIntake(wrist, intakeWheels));
+//        driverController.rightTrigger()
+//                .onTrue(new SpitOutNote(wrist, intakeWheels))
+//                .onFalse(new ResetIntake(wrist, intakeWheels));
 
         driverController.rightBumper()
                 .onTrue(new RunIntakeWheels(intakeWheels, () -> kIntakeNoteWheelSpeed))
@@ -337,6 +337,18 @@ public class RobotContainer {
                         new RotateArmToPosition(arm, () -> 0),
                         new RunIntakeWheels(intakeWheels, () -> 0)));
 
+        driverController.rightTrigger()
+                .onTrue(new SequentialCommandGroup(
+                        new ParallelCommandGroup(
+                                new AimToBall(drivetrain , () -> VisionVariables.ExportedVariables.Distance))
+                ))
+                .onFalse(
+                        new ParallelDeadlineGroup(
+                                new WaitCommand(0.2) ,
+                                drivetrain.applyRequest(() -> brake) ,
+                                new RotateWristToPosition(wrist ,
+                                        IntakeConstants.WristPID.kWristShooterFeederSetpoint)));
+
         driverController.y()  .onTrue(
                         new ParallelCommandGroup(
                                 new RotateWristToPositionInfinite(wrist, IntakeConstants.WristPID.kWristOutOfTheWay),
@@ -392,25 +404,6 @@ public class RobotContainer {
                         new AlignShooterAndIntake(shooterRotation, wrist, intakeWheels,
                                 servos, shooterIRSensor, leds)));
 
-        operatorController.rightTrigger()
-                .onTrue(new SequentialCommandGroup(
-                        new ParallelCommandGroup(
-                                new AimToAprilTag(drivetrain,
-                                        () -> -driverController.getLeftX(),
-                                        () -> -driverController.getLeftY(),
-                                        () -> VisionVariables.ExportedVariables.Distance)
-                                        .andThen(
-                                                new ParallelCommandGroup(
-                                                        new SetLEDColor(leds, Leds.LedColors.VIOLET),
-                                                        new ToggleRumble(driverController, 0.3),
-                                                        new ToggleRumble(operatorController, 0.3))),
-                                new RotateWristToPositionInfinite(wrist, IntakeConstants.WristPID.kWristOutOfTheWay))))
-                .onFalse(
-                        new ParallelDeadlineGroup(
-                                new WaitCommand(0.2),
-                                drivetrain.applyRequest(() -> brake),
-                                new RotateWristToPosition(wrist,
-                                        IntakeConstants.WristPID.kWristShooterFeederSetpoint)));
 
         operatorController.leftTrigger()
                 .onTrue(
