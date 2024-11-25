@@ -41,6 +41,7 @@ public class AimToBall extends Command {
 
     private final PIDController rotationalPID;
     private final PIDController strafePID;
+    private final PIDController xPID;
     private final DoubleSupplier c_limelightDistance;
 
     private final MovingAverageFiltery xFilter = new MovingAverageFiltery(5); // Smooth over last 5 values
@@ -53,9 +54,11 @@ public class AimToBall extends Command {
         // Initialize PID controllers
         rotationalPID = new PIDController(0.1 , 0.0 , 0.0); // Example PID values
         strafePID = new PIDController(0.085 , .000 , .00);
+        xPID = new PIDController(.085,0,0);
 
         rotationalPID.setTolerance(1);
-        strafePID.setTolerance(1);
+        strafePID.setTolerance(0);
+        xPID.setTolerance(0);
 
         addRequirements(swerve);
     }
@@ -66,6 +69,7 @@ public class AimToBall extends Command {
         c_swerve.resetPID();
         rotationalPID.reset();
         strafePID.reset();
+        xPID.reset();
     }
 
     @Override
@@ -77,24 +81,26 @@ public class AimToBall extends Command {
     public void execute() {
         // Get raw and smoothed X offset from the Limelight
         double rawX = VisionVariables.BackCam.target.getX();
+        double rawY = VisionVariables.BackCam.target.getDistance();
         double smoothedX = xFilter.calculate(rawX);
 
         // Calculate PID outputs
         double rotationOutput = rotationalPID.calculate(smoothedX , 0); // Align X to 0
-        double strafeOutput = strafePID.calculate(smoothedX , 0); // Strafe to center ball
-
+        double strafeOutput = strafePID.calculate(rawX , 0); // Strafe to center ball
+        double xOutput = xPID.calculate(rawY, 2); //this setpoint will probably have to be changed
         // Log values to SmartDashboard
         SmartDashboard.putNumber("Limelight Raw X" , rawX);
         SmartDashboard.putNumber("Limelight Smoothed X" , smoothedX);
         SmartDashboard.putNumber("Distance to Ball" , c_limelightDistance.getAsDouble());
         SmartDashboard.putNumber("Rotation Output" , rotationOutput);
         SmartDashboard.putNumber("Strafe Output" , strafeOutput);
+        SmartDashboard.putNumber("X output", xOutput);
 
         // Send control to the swerve drivetrain
         c_swerve.setControl(drive
-                .withVelocityX(0) // No forward/backward movement in this command
+                .withVelocityX(xOutput) // forward/backward movement based on distance from ball
                 .withVelocityY(strafeOutput) // Strafe based on X offset
-                .withRotationalRate(rotationOutput)); // Rotate to align with the ball
+                .withRotationalRate(0)); // no rotational output for now
     }
 
     @Override

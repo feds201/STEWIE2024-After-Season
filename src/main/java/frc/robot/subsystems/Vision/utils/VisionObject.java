@@ -142,7 +142,7 @@ public class VisionObject {
                 double goalHeightMetres = 1.22;
                 double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
                 double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
-                return (goalHeightMetres - limelightLensHeightMetres) / Math.tan(angleToGoalRadians);
+                return ((goalHeightMetres - limelightLensHeightMetres) / Math.tan(angleToGoalRadians));
             default:
                 throw new IllegalStateException("Unexpected value: " + type);
         }
