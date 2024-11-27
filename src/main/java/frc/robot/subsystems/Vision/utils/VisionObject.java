@@ -139,7 +139,7 @@ public class VisionObject {
                 double targetOffsetAngle_Vertical = y;
                 double limelightMountAngleDegrees = 30;
                 double limelightLensHeightMetres = 0.285;
-                double goalHeightMetres = 1.22;
+                double goalHeightMetres = .622;
                 double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
                 double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
                 return ((goalHeightMetres - limelightLensHeightMetres) / Math.tan(angleToGoalRadians));
