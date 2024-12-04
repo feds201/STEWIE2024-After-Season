@@ -41,24 +41,26 @@ public class AimToBall extends Command {
 
     private final PIDController rotationalPID;
     private final PIDController strafePID;
-    private final PIDController xPID;
+    private final PIDController distancePID;
     private final DoubleSupplier c_limelightDistance;
 
-    private final MovingAverageFiltery xFilter = new MovingAverageFiltery(5); // Smooth over last 5 values
-    private final double alpha = 0.1; // Example alpha for low-pass filtering
+    private MovingAverageFiltery X_filter;
+    private MovingAverageFiltery Y_filter;
 
     public AimToBall(CommandSwerveDrivetrain swerve , DoubleSupplier limelightDistance) {
         c_swerve = swerve;
         c_limelightDistance = limelightDistance;
+        X_filter = new MovingAverageFiltery(5);
+        Y_filter = new MovingAverageFiltery(2);
 
         // Initialize PID controllers
-        rotationalPID = new PIDController(1 , 0.0 , 0.0); // Example PID values
-        strafePID = new PIDController(0.085 , .000 , .00);
-        xPID = new PIDController(2,0,0);
+        distancePID = new PIDController(2 , 0.0 , 0.0);
+        strafePID = new PIDController(0.085 , 0.0 , 0);
+        rotationalPID = new PIDController(.1 , 0.0 , 0);
 
         rotationalPID.setTolerance(1);
         strafePID.setTolerance(0);
-        xPID.setTolerance(0);
+        distancePID.setTolerance(0);
 
         addRequirements(swerve);
     }
@@ -69,7 +71,7 @@ public class AimToBall extends Command {
         c_swerve.resetPID();
         rotationalPID.reset();
         strafePID.reset();
-        xPID.reset();
+        distancePID.reset();
     }
 
     @Override
@@ -79,29 +81,28 @@ public class AimToBall extends Command {
 
     @Override
     public void execute() {
-        // Get raw and smoothed X offset from the Limelight
-        double rawX = VisionVariables.BackCam.target.getX();
-        double rawY = VisionVariables.BackCam.target.getDistance();
-        double smoothedX = xFilter.calculate(rawX);
-
+        double X_smooth = X_filter.calculate(VisionVariables.BackCam.target.getX());
+        double Y_smooth = Y_filter.calculate(VisionVariables.BackCam.target.getDistance());
         // Calculate PID outputs
-        double rotationOutput = rotationalPID.calculate(smoothedX , 0); // Align X to 0
-        double strafeOutput = strafePID.calculate(rawX , 0); // Strafe to center ball
-        double xOutput = xPID.calculate(rawY, .75); //this setpoint will probably have to be changed
+
+        double Output_linear = distancePID.calculate(Y_smooth);
+        double Output_strafe = strafePID.calculate(X_smooth);
+        double Output_rotation = (rotationalPID.calculate(X_smooth) - Output_strafe) - Output_strafe / 2; // basic principles of kinematics and dynamics
+
         // Log values to SmartDashboard
-        SmartDashboard.putNumber("Limelight Raw X" , rawX);
-        SmartDashboard.putNumber("Limelight Smoothed X" , smoothedX);
+
+        SmartDashboard.putNumber("Limelight Smoothed X" , X_smooth);
         SmartDashboard.putNumber("Distance to Ball" , c_limelightDistance.getAsDouble());
-        SmartDashboard.putNumber("Rotation Output" , rotationOutput);
-        SmartDashboard.putNumber("Strafe Output" , strafeOutput);
-        SmartDashboard.putNumber("X output", xOutput);
-       
+        SmartDashboard.putNumber("Rotation Output" , Output_rotation);
+        SmartDashboard.putNumber("Strafe Output" , Output_strafe);
+        SmartDashboard.putNumber("X output" , Output_linear);
+
 
         // Send control to the swerve drivetrain
         c_swerve.setControl(drive
-                .withVelocityX(-xOutput) // forward/backward movement based on distance from ball
-                .withVelocityY(strafeOutput) // Strafe based on X offset
-                .withRotationalRate(0)); // no rotational output for now
+                .withVelocityX(Output_linear)
+                .withVelocityY(-Output_strafe)
+                .withRotationalRate(Output_rotation));
     }
 
     @Override

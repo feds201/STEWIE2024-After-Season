@@ -227,12 +227,13 @@ public class RobotContainer {
     private void configureDefaultCommands() {
         drivetrain.setDefaultCommand(new ParallelCommandGroup(
                 drivetrain.applyRequest(() -> drive
-                        .withVelocityX(-driverController.getLeftY()
+                        .withVelocityX(-driverController.getLeftX()
                                 * SwerveConstants.MaxSpeed * swerveSpeedMultiplier)
-                        .withVelocityY(-driverController.getLeftX()
+                        .withVelocityY(-driverController.getLeftY()
                                 * SwerveConstants.MaxSpeed * swerveSpeedMultiplier)
-                        .withRotationalRate(-driverController.getRightX() *
-                                SwerveConstants.MaxAngularRate * swerveSpeedMultiplier)),
+                        .withRotationalRate(0)) ,
+                // .withRotationalRate(-driverController.getRightX() *
+                //         SwerveConstants.MaxAngularRate * swerveSpeedMultiplier)),
                 new RepeatCommand(
                         new InstantCommand(this::printCurrentStickValues))));
 
