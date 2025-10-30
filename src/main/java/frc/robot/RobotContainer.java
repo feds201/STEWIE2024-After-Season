@@ -262,56 +262,56 @@ public class RobotContainer {
         driverController.start()
                 .onTrue(drivetrain.runOnce(drivetrain::seedFieldRelative));
 
-        driverController.leftTrigger()
-                .onTrue(
-                        new DeployIntake(wrist, intakeWheels, shooterRotation, intakeIRSensor, leds, driverController,
-                                operatorController))
-                .onFalse(
-                        new ParallelCommandGroup(new ResetIntake(wrist, intakeWheels),
-                                new ToggleRumble(driverController, 0),
-                                new ToggleRumble(operatorController, 0),
-                                new SequentialCommandGroup(new WaitCommand(1.5),
-                                        new SetLEDColor(leds, Leds.LedColors.WHITE))
-                                        .onlyIf(intakeIRSensor::getBeamBroken)));
+        // driverController.leftTrigger()
+        //         .onTrue(
+        //                 new DeployIntake(wrist, intakeWheels, shooterRotation, intakeIRSensor, leds, driverController,
+        //                         operatorController))
+        //         .onFalse(
+        //                 new ParallelCommandGroup(new ResetIntake(wrist, intakeWheels),
+        //                         new ToggleRumble(driverController, 0),
+        //                         new ToggleRumble(operatorController, 0),
+        //                         new SequentialCommandGroup(new WaitCommand(1.5),
+        //                                 new SetLEDColor(leds, Leds.LedColors.WHITE))
+        //                                 .onlyIf(intakeIRSensor::getBeamBroken)));
 
-        driverController.rightTrigger()
-                .onTrue(new SpitOutNote(wrist, intakeWheels))
-                .onFalse(new ResetIntake(wrist, intakeWheels));
+        // driverController.rightTrigger()
+        //         .onTrue(new SpitOutNote(wrist, intakeWheels))
+        //         .onFalse(new ResetIntake(wrist, intakeWheels));
 
-        driverController.rightBumper()
-                .onTrue(new RunIntakeWheels(intakeWheels, () -> kIntakeNoteWheelSpeed))
-                .onFalse(new RunIntakeWheels(intakeWheels, () -> 0));
+        // driverController.rightBumper()
+        //         .onTrue(new RunIntakeWheels(intakeWheels, () -> kIntakeNoteWheelSpeed))
+        //         .onFalse(new RunIntakeWheels(intakeWheels, () -> 0));
 
         driverController.a()
                 .onTrue(new RotateShooterToPosition(shooterRotation,
                         () -> ShooterConstants.RotationPIDForExternalEncoder.kShooterRotationFeederSetpoint));
 
-        driverController.leftBumper()
-                .onTrue(
-                        new SequentialCommandGroup(
-                                new ParallelDeadlineGroup(
-                                        new ParallelDeadlineGroup(
-                                                new WaitCommand(2),
-                                                new RotateShooterToPosition(shooterRotation,
-                                                        () -> ShooterConstants.RotationPIDForExternalEncoder.kShooterHorizontal)),
-                                        new ShootNoteMotionMagicVelocity(
-                                                shooterWheels,
-                                                () -> LimelightUtils
-                                                        .GetSpeedTop(VisionVariables.ExportedVariables.Distance),
-                                                () -> LimelightUtils
-                                                        .GetSpeedBottom(VisionVariables.ExportedVariables.Distance)),
-                                        new SequentialCommandGroup(
-                                                new WaitCommand(0.7),
-                                                new EjectNote(servos),
-                                                new SetLEDColor(leds, Leds.getAllianceColor()))),
-                                new ShootNoteMotionMagicVelocity(shooterWheels, () -> 0, () -> 0),
-                                new RotateShooterToPosition(shooterRotation,
-                                        () -> ShooterConstants.RotationPIDForExternalEncoder.kShooterRotationFeederSetpoint)))
-                .onFalse(
-                        new ParallelCommandGroup(
-                                new RotateShooterToPosition(shooterRotation,
-                                        () -> ShooterConstants.RotationPIDForExternalEncoder.kShooterRotationFeederSetpoint),
-                                new ShootNoteMotionMagicVelocity(shooterWheels, () -> 0, () -> 0)));
+        // driverController.leftBumper()
+        //         .onTrue(
+        //                 new SequentialCommandGroup(
+        //                         new ParallelDeadlineGroup(
+        //                                 new ParallelDeadlineGroup(
+        //                                         new WaitCommand(2),
+        //                                         new RotateShooterToPosition(shooterRotation,
+        //                                                 () -> ShooterConstants.RotationPIDForExternalEncoder.kShooterHorizontal)),
+        //                                 new ShootNoteMotionMagicVelocity(
+        //                                         shooterWheels,
+        //                                         () -> LimelightUtils
+        //                                                 .GetSpeedTop(VisionVariables.ExportedVariables.Distance),
+        //                                         () -> LimelightUtils
+        //                                                 .GetSpeedBottom(VisionVariables.ExportedVariables.Distance)),
+        //                                 new SequentialCommandGroup(
+        //                                         new WaitCommand(0.7),
+        //                                         new EjectNote(servos),
+        //                                         new SetLEDColor(leds, Leds.getAllianceColor()))),
+        //                         new ShootNoteMotionMagicVelocity(shooterWheels, () -> 0, () -> 0),
+        //                         new RotateShooterToPosition(shooterRotation,
+        //                                 () -> ShooterConstants.RotationPIDForExternalEncoder.kShooterRotationFeederSetpoint)))
+        //         .onFalse(
+        //                 new ParallelCommandGroup(
+        //                         new RotateShooterToPosition(shooterRotation,
+        //                                 () -> ShooterConstants.RotationPIDForExternalEncoder.kShooterRotationFeederSetpoint),
+        //                         new ShootNoteMotionMagicVelocity(shooterWheels, () -> 0, () -> 0)));
 
         
 
@@ -326,36 +326,38 @@ public class RobotContainer {
 
     public void configureOperatorController() {
         // LOAD BUTTON
-        operatorController.leftBumper()
-                .onTrue(new ParallelCommandGroup(
-                        new RotateArmToPosition(arm, () -> 0),
-                        new AlignShooterAndIntake(shooterRotation, wrist, intakeWheels,
-                                servos, shooterIRSensor, leds)));
+        // operatorController.rightTrigger()
+        // .onTrue(new ShootNoteAtSpeakerOnlyReverse(shooterRotation, shooterWheels, servos, leds,   () -> VisionVariables.ExportedVariables.Distance, shooterIRSensor))
+        // .onFalse(  new ShootNoteMotionMagicVelocity(shooterWheels, () -> 0, () -> 0));
+                // .onTrue(new ParallelCommandGroup(
+                //         new RotateArmToPosition(arm, () -> 0),
+                //         new AlignShooterAndIntake(shooterRotation, wrist, intakeWheels,
+                //                 servos, shooterIRSensor, leds)));
 
-        operatorController.rightTrigger()
-                .onTrue(new SequentialCommandGroup(
-                        new ParallelCommandGroup(
-                                new AimToAprilTag(drivetrain,
-                                        () -> -driverController.getLeftX(),
-                                        () -> -driverController.getLeftY(),
-                                        () -> VisionVariables.ExportedVariables.Distance)
-                                        .andThen(
-                                                new ParallelCommandGroup(
-                                                        new SetLEDColor(leds, Leds.LedColors.VIOLET),
-                                                        new ToggleRumble(driverController, 0.3),
-                                                        new ToggleRumble(operatorController, 0.3))),
-                                new RotateWristToPositionInfinite(wrist, IntakeConstants.WristPID.kWristOutOfTheWay))))
-                .onFalse(
-                        new ParallelDeadlineGroup(
-                                new WaitCommand(0.2),
-                                drivetrain.applyRequest(() -> brake),
-                                new RotateWristToPosition(wrist,
-                                        IntakeConstants.WristPID.kWristShooterFeederSetpoint)));
+        // operatorController.rightTrigger()
+        //         .onTrue(new SequentialCommandGroup(
+        //                 new ParallelCommandGroup(
+        //                         new AimToAprilTag(drivetrain,
+        //                                 () -> -driverController.getLeftX(),
+        //                                 () -> -driverController.getLeftY(),
+        //                                 () -> VisionVariables.ExportedVariables.Distance)
+        //                                 .andThen(
+        //                                         new ParallelCommandGroup(
+        //                                                 new SetLEDColor(leds, Leds.LedColors.VIOLET),
+        //                                                 new ToggleRumble(driverController, 0.3),
+        //                                                 new ToggleRumble(operatorController, 0.3))),
+        //                         new RotateWristToPositionInfinite(wrist, IntakeConstants.WristPID.kWristOutOfTheWay))))
+        //         .onFalse(
+        //                 new ParallelDeadlineGroup(
+        //                         new WaitCommand(0.2),
+        //                         drivetrain.applyRequest(() -> brake),
+        //                         new RotateWristToPosition(wrist,
+        //                                 IntakeConstants.WristPID.kWristShooterFeederSetpoint)));
 
         operatorController.leftTrigger()
                 .onTrue(
                         new ParallelCommandGroup(
-                                new RotateWristToPositionInfinite(wrist, IntakeConstants.WristPID.kWristOutOfTheWay),
+                                // new RotateWristToPositionInfinite(wrist, IntakeConstants.WristPID.kWristOutOfTheWay),
                                 new ShootFromHandoff(shooterRotation, shooterWheels, servos, leds,
                                         () -> VisionVariables.ExportedVariables.Distance, shooterIRSensor))
                                 .andThen(
@@ -374,24 +376,46 @@ public class RobotContainer {
                         new ToggleRumble(driverController, 0),
                         new ToggleRumble(operatorController, 0)));
 
-        operatorController.a()
-                .onTrue(new PlaceInAmp(wrist, intakeWheels, arm, leds, shooterRotation)
-                        .andThen(
-                                new ParallelCommandGroup(
-                                        new SetLEDColor(leds,
-                                                leds.getLedColor()),
-                                        new ToggleRumble(driverController, 0.3),
-                                        new ToggleRumble(operatorController, 0.3))))
+
+        operatorController.rightTrigger()
+                .onTrue(
+                        new ParallelCommandGroup(
+                                // new RotateWristToPositionInfinite(wrist, IntakeConstants.WristPID.kWristOutOfTheWay),
+                                new ShootFromHandoffReverse(shooterRotation, shooterWheels, servos, leds,
+                                        () -> VisionVariables.ExportedVariables.Distance, shooterIRSensor))
+                                .andThen(
+                                        new ParallelCommandGroup(
+                                                new ToggleRumble(driverController, 0.3),
+                                                new ToggleRumble(operatorController,
+                                                        0.3)))
+
+                )
                 .onFalse(new ParallelCommandGroup(
-                        new RotateWristToPosition(wrist,
-                                IntakeConstants.WristPID.kWristIdlePosition),
-                        new RotateArmToPosition(arm, () -> 0),
-                        new RunIntakeWheels(intakeWheels, () -> 0)));
-        operatorController.x()
-                .onTrue(new RotateWristToPosition(wrist, IntakeConstants.WristPID.kWristShooterFeederSetpoint));
-        // new Trigger(breakBeamSensorShooter::getBeamBroken).onTrue(new
-        // SetLEDColor(leds, Leds.LedColors.ORANGE));
-        // operatorController.povUp()
+                        new SetLEDColor(leds, Leds.getAllianceColor()),
+                        new RotateShooterToPosition(shooterRotation,
+                                () -> ShooterConstants.RotationPIDForExternalEncoder.kShooterRotationFeederSetpoint),
+                        new ShootNoteMotionMagicVelocity(shooterWheels, () -> 0, () -> 0),
+                        new ResetIntake(wrist, intakeWheels),
+                        new ToggleRumble(driverController, 0),
+                        new ToggleRumble(operatorController, 0)));
+        // operatorController.a()
+        //         .onTrue(new PlaceInAmp(wrist, intakeWheels, arm, leds, shooterRotation)
+        //                 .andThen(
+        //                         new ParallelCommandGroup(
+        //                                 new SetLEDColor(leds,
+        //                                         leds.getLedColor()),
+        //                                 new ToggleRumble(driverController, 0.3),
+        //                                 new ToggleRumble(operatorController, 0.3))))
+        //         .onFalse(new ParallelCommandGroup(
+        //                 new RotateWristToPosition(wrist,
+        //                         IntakeConstants.WristPID.kWristIdlePosition),
+        //                 new RotateArmToPosition(arm, () -> 0),
+        //                 new RunIntakeWheels(intakeWheels, () -> 0)));
+        // operatorController.x()
+        //         .onTrue(new RotateWristToPosition(wrist, IntakeConstants.WristPID.kWristShooterFeederSetpoint));
+        // // new Trigger(breakBeamSensorShooter::getBeamBroken).onTrue(new
+        // // SetLEDColor(leds, Leds.LedColors.ORANGE));
+        // // operatorController.povUp()
         // .onTrue()
 
     }

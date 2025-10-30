@@ -23,7 +23,7 @@ import java.util.function.DoubleSupplier;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class ShootNoteAtSpeakerOnly extends SequentialCommandGroup {
+public class ShootNoteAtSpeakerOnlyReverse extends SequentialCommandGroup {
   /**
    * Creates a new ShootNoteAtSpeakerOnly.
    *
@@ -32,7 +32,7 @@ public class ShootNoteAtSpeakerOnly extends SequentialCommandGroup {
    * @param servos
    * @param shooterIRSensor
    */
-  public ShootNoteAtSpeakerOnly(ShooterRotation shooterRotation, ShooterWheels shooterWheels, ShooterServos servos, Leds leds, DoubleSupplier distanceSupplier, ShooterIRSensor shooterIRSensor) {
+  public ShootNoteAtSpeakerOnlyReverse(ShooterRotation shooterRotation, ShooterWheels shooterWheels, ShooterServos servos, Leds leds, DoubleSupplier distanceSupplier, ShooterIRSensor shooterIRSensor) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     
@@ -41,12 +41,12 @@ public class ShootNoteAtSpeakerOnly extends SequentialCommandGroup {
             // This command vvvv never ends.
             new RotateShooterToPosition(
                 shooterRotation,
-                () -> 5)
-                .until(() -> !shooterIRSensor.getBeamBroken()),
+                () -> -14.0),
+                
             new ShootNoteMotionMagicVelocity(
                 shooterWheels,
-                () -> (LimelightUtils.GetSpeedTop(distanceSupplier.getAsDouble())*.75),
-                () -> (LimelightUtils.GetSpeedBottom(distanceSupplier.getAsDouble())*.75)),
+                () -> -LimelightUtils.GetSpeedTop(distanceSupplier.getAsDouble()),
+                () -> -LimelightUtils.GetSpeedBottom(distanceSupplier.getAsDouble())),
             new SequentialCommandGroup(
                 new WaitCommand(1),
                 new EjectNote(servos),

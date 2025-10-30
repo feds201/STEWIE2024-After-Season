@@ -80,12 +80,12 @@ public class LimelightUtils {
     }
 
     public static double GetSpeedTop(double limelightDistance) {
-        return -80;
+        return -20;
         // Right now there is no change in speed depending on the distance
     }
     
     public static double GetSpeedBottom(double limelightDistance) {
-        return -80;
+        return -20;
     }
     
     public static double MapDistanceToOffset(double asDouble) {
